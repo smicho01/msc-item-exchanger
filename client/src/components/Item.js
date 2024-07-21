@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 const BACKEND_URL =  process.env.REACT_APP_BACKEND_URL
+const BACKEND_API_KEY =  process.env.REACT_APP_BACKEND_API_KEY
 const BLOCKCHAIN_URL =  process.env.REACT_APP_BLOCKCHAIN_URL
 const BLOCKCHAIN_API_KEY =  process.env.REACT_APP_BLOCKCHAIN_API_KEY
 
@@ -25,7 +26,11 @@ const Item = () => {
 
     useEffect(() => {
         // Fetch the book details from the server
-        axios.get(`${BACKEND_URL}/books/${id}`)
+        axios.get(`${BACKEND_URL}/books/${id}`, {
+            headers: {
+                'x-api-key': BACKEND_API_KEY
+            }
+        })
             .then(response => {
                 setItem(response.data);
                 setLoading(false);
@@ -71,7 +76,20 @@ const Item = () => {
                     })
                     .then(response => {
                         console.log('Transfer successful:', response.data);
-                        // Update item data in MongoDB to set item as sold and assign buyer wallet to recognize new owner
+
+                        if(response.data.message === 'Block mined.') {
+                            // Update item data in MongoDB to set item as sold and assign buyer wallet to recognize new owner
+                            item.sold = true;
+                            item.buyer = walletPublicKey;
+                            item.buyerusername = username;
+                            axios.put(`${BACKEND_URL}/books/${item._id}`, item, {
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'x-api-key': BACKEND_API_KEY
+                                },
+                            });
+                        }
+
                         setShowItemPurchased(!showItemPurchased)
                     })
                     .catch(error => console.error('Error transferring tokens:', error));
@@ -94,12 +112,16 @@ const Item = () => {
                 <div className="col-md-5">
                     <h4>{item.title}</h4>
                     <p className="text-muted">Type: {item.type}</p>
-                    <p className="lead">{item.price} Token[s]</p>
+                    <p className="lead">Price: {item.price} Token[s]</p>
                     {!item.sold && (
                     <button className="btn btn-success" onClick={handleBuyClick}>I want to buy it</button>
                         )}
                     {item.sold && (
+                        <div>
                         <p className="alert alert-danger">Item Sold</p>
+                        <p>To wallet ending: ... {item.buyer.slice(-20)}</p>
+                        <p>Buyer username: ... {item.buyerusername}</p>
+                        </div>
                     )}
 
                 </div>

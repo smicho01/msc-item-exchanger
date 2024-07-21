@@ -31,7 +31,8 @@ const bookSchema = new mongoose.Schema({
     username: String,
     wallet: String,
     sold: Boolean,
-    buyer: String
+    buyer: String,
+    buyerusername: String,
 });
 
 const Book = mongoose.model('Book', bookSchema, 'books');
@@ -73,8 +74,7 @@ app.put('/books/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const body = req.body
-        const newBookData = { ...body, buyer: body.buyer }
-        const updatedBook = await Book.findByIdAndUpdate(id, newBookData, { new: true });
+        const updatedBook = await Book.findByIdAndUpdate(id, body, { new: true });
         if(updatedBook){
             res.status(200).json(updatedBook);
         }else{

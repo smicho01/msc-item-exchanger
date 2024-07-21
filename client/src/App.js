@@ -4,6 +4,7 @@ import ItemsList from './components/ItemsList';
 import Item from './components/Item';
 import About from "./components/About";
 import Contact from "./components/Contact";
+import ItemAdd from "./components/ItemAdd";
 
 
 
@@ -18,22 +19,26 @@ const App = () => {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav ml-auto">
-              <li className="nav-item active">
-                <Link to="/" className="nav-link">Home</Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/about" className="nav-link">About</Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/contact" className="nav-link">Contact</Link>
-              </li>
-            </ul>
+              <ul className="navbar-nav ml-auto">
+                  <li className="nav-item active">
+                      <Link to="/" className="nav-link">Home</Link>
+                  </li>
+                  <li className="nav-item">
+                      <Link to="/add-item" className="nav-link">Add Item</Link>
+                  </li>
+                  <li className="nav-item">
+                      <Link to="/about" className="nav-link">About</Link>
+                  </li>
+                  <li className="nav-item">
+                      <Link to="/contact" className="nav-link">Contact</Link>
+                  </li>
+              </ul>
           </div>
         </nav>
 
           <Routes>
-              <Route path="/" element={<ItemsList />} />
+              <Route path="/" element={<ItemsList/>}/>
+              <Route path="/add-item" element={<ItemAdd />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/item/:id" element={<Item />} />

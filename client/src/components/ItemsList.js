@@ -2,19 +2,30 @@ import React, { useEffect, useState } from 'react';
 import {BrowserRouter as Router, Routes, Route, Link} from 'react-router-dom';
 import axios from 'axios';
 
-
 const BACKEND_URL =  process.env.REACT_APP_BACKEND_URL
-const BLOCKCHAIN_URL =  process.env.REACT_APP_BLOCKCHAIN_URL
-
-
+const BACKEND_API_KEY =  process.env.REACT_APP_BACKEND_API_KEY
 const ItemsList = () => {
     const [items, setItems] = useState([]);
+    const [filteredItems, setFilteredItems] = useState([]);
+    const [showFiltered, setShowFiltered] = useState(false);
 
     useEffect(() => {
-        axios.get(`${BACKEND_URL}/books`)
+        axios.get(`${BACKEND_URL}/books`, {
+            headers: {
+                'x-api-key': BACKEND_API_KEY
+            }
+        })
             .then(response => setItems(response.data))
             .catch(error => console.error('Error fetching data:', error));
     }, []);
+
+    const toggleUnsoldItems = () => {
+        if (!showFiltered) { // if showFiltered it's false
+            const unsoldItems = items.filter( item => !item.sold );
+            setFilteredItems(unsoldItems);
+        }
+        setShowFiltered(!showFiltered); // switch the value of showFiltered
+    }
 
     return (
         <div className="container mt-5">
@@ -23,10 +34,12 @@ const ItemsList = () => {
                 <p className="lead">Running on AcademiChain Blockchain</p>
                 <hr className="my-4"/>
                 <p>Browse all items available for exchange</p>
+                <button onClick={toggleUnsoldItems} className="btn btn-primary">
+                    {showFiltered ? "Show All Items" : "Show Unsold Items"}
+                </button>
             </div>
-
             <div className="row">
-                {items.map(item => (
+                {(showFiltered ? filteredItems : items).map(item => (
                     <div className="col-md-4" key={item._id}>
                         <div className="card mb-4 shadow-sm">
                             <div className="card-body">
@@ -43,5 +56,4 @@ const ItemsList = () => {
         </div>
     );
 };
-
 export default ItemsList;
