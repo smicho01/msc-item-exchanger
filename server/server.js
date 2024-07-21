@@ -39,6 +39,7 @@ const Book = mongoose.model('Book', bookSchema, 'books');
 
 // Routes
 app.get('/books', async (req, res) => {
+    console.log("GET /books")
     try {
         const books = await Book.find();
         res.json(books);
@@ -48,6 +49,7 @@ app.get('/books', async (req, res) => {
 });
 
 app.get('/books/:id', async (req, res) => {
+    console.log(`GET /books/${req.params.id}`)
     try {
         const book = await Book.findById(req.params.id);
         if (book == null) {
@@ -60,6 +62,7 @@ app.get('/books/:id', async (req, res) => {
 });
 
 app.post('/books', async (req, res) => {
+    console.log('POST /books')
     const book = new Book(req.body);
     try {
         book.sold = false;
@@ -71,6 +74,7 @@ app.post('/books', async (req, res) => {
 });
 
 app.put('/books/:id', async (req, res) => {
+    console.log(`PUT /books/${req.params.id}`)
     try {
         const id = req.params.id;
         const body = req.body
@@ -89,9 +93,6 @@ app.put('/books/:id', async (req, res) => {
 function validateKey(req, res, next) {
     const api_key = process.env.API_KEY;  // import your secret API key from server environment or a secure place.
     const userKey = req.get('x-api-key');
-
-    console.log("Checking for auth header")
-    console.log("Api Key: ", api_key)
 
     if (!userKey || userKey !== api_key) {
         res.status(403).send({ error: 'Unauthorized.' });
