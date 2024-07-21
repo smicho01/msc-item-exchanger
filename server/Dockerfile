@@ -9,7 +9,7 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 92
+EXPOSE 4000
 
 USER sevchainuser
 
