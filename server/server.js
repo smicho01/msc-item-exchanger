@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -9,6 +10,7 @@ const PORT = process.env.PORT || 4000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use(validateKey);
 
 // MongoDB Atlas connection
 const mongoURI = 'mongodb+srv://student:password123$@cluster0.t5qoish.mongodb.net/academichainbooks?retryWrites=true&w=majority&appName=Cluster0';
@@ -82,6 +84,21 @@ app.put('/books/:id', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+
+function validateKey(req, res, next) {
+    const api_key = process.env.API_KEY;  // import your secret API key from server environment or a secure place.
+    const userKey = req.get('x-api-key');
+
+    console.log("Checking for auth header")
+    console.log("Api Key: ", api_key)
+
+    if (!userKey || userKey !== api_key) {
+        res.status(403).send({ error: 'Unauthorized.' });
+    } else {
+        next();
+    }
+}
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
